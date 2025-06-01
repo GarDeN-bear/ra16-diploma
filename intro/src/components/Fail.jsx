@@ -1,6 +1,6 @@
 import React from "react";
 
-const Main = () => {
+const Fail = () => {
     return (
         <main className="container">
             <div className="row">
@@ -21,4 +21,4 @@ const Main = () => {
     );
 }
 
-export default Main
+export default Fail

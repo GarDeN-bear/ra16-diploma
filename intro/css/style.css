@@ -339,3 +339,7 @@ h2,
     background-color: #727e86;
     border-color: #727e86;
 }
+
+.card {
+    height: 100%;
+}
