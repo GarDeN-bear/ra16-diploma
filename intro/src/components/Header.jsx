@@ -1,8 +1,22 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Header = () => {
+    const [searchVisibility, setSearchVisibility] = useState(false);
+    const [search, setSearch] = useState("");
     const location = useLocation();
+
+    const navigate = useNavigate();
+
+    const handleSearchOnSubmit = (e) => {
+        e.preventDefault();
+        const query = search.trim();
+        if (query) {
+            navigate(`/catalog.html?q=${encodeURIComponent(query)}`);
+        }
+        setSearch("");
+        setSearchVisibility(!searchVisibility);
+    }
 
     return (
         <header className="container">
@@ -29,14 +43,14 @@ const Header = () => {
                             </ul>
                             <div>
                                 <div className="header-controls-pics">
-                                    <div data-id="search-expander" className="header-controls-pic header-controls-search"></div>
+                                    <div data-id="search-expander" className="header-controls-pic header-controls-search" onClick={handleSearchOnSubmit}></div>
                                     <div className="header-controls-pic header-controls-cart">
                                         <div className="header-controls-cart-full">1</div>
                                         <div className="header-controls-cart-menu"></div>
                                     </div>
                                 </div>
-                                <form data-id="search-form" className="header-controls-search-form form-inline invisible">
-                                    <input className="form-control" placeholder="Поиск" />
+                                <form data-id="search-form" className={`header-controls-search-form form-inline ${searchVisibility ? '' : 'invisible'}`}>
+                                    <input className="form-control" placeholder="Поиск" value={search} onChange={(e) => setSearch(e.target.value)} />
                                 </form>
                             </div>
                         </div>

@@ -62,7 +62,7 @@ const sendResponse = (res, statusCode, data = null) => {
   res.end(JSON.stringify(data))
 }
 
-const createServer = (port = 7071) => {
+const createServer = (port = 7072) => {
   const server = http.createServer(async (req, res) => {
     if (req.method === 'OPTIONS') {
       return handleOptionsRequest(req, res)
