@@ -36,6 +36,32 @@ const CatalogItem = () => {
         }
     }
 
+    const addToCart = () => {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const existingItem = cart.find((cartItem) => {
+            return (cartItem.id === item.id) && (cartItem.size === item.sizes[selectedSize].size)
+        });
+
+        if (existingItem) {
+            existingItem.count += countItemsToOrder;
+            existingItem.totalPrice += item.price * countItemsToOrder;
+        } else {
+            cart.push(
+                {
+                    id: item.id,
+                    title: item.title,
+                    size: item.sizes[selectedSize].size,
+                    count: countItemsToOrder,
+                    price: item.price,
+                    totalPrice: item.price * countItemsToOrder
+                }
+            );
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        navigate("/cart.html");
+    }
+
     return (
         <>
             {isLoading ? (
@@ -101,7 +127,7 @@ const CatalogItem = () => {
                             </div>
                             {
                                 item.sizes.length > 0 ?
-                                    (<button className="btn btn-danger btn-block btn-lg" disabled={selectedSize >= 0 ? false : true} onClick={() => navigate("/cart.html")}>В корзину</button>) :
+                                    (<button className="btn btn-danger btn-block btn-lg" disabled={selectedSize >= 0 ? false : true} onClick={addToCart}>В корзину</button>) :
                                     ("")
                             }
                         </div>

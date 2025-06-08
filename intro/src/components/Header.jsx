@@ -1,21 +1,24 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ countCartItems }) => {
     const [searchVisibility, setSearchVisibility] = useState(false);
     const [search, setSearch] = useState("");
-    const location = useLocation();
 
+    const location = useLocation();
     const navigate = useNavigate();
 
     const handleSearchOnSubmit = (e) => {
-        e.preventDefault();
         const query = search.trim();
         if (query) {
             navigate(`/catalog.html?q=${encodeURIComponent(query)}`);
         }
         setSearch("");
         setSearchVisibility(!searchVisibility);
+    }
+
+    const handleCartOnClick = () => {
+        navigate("/cart.html");
     }
 
     return (
@@ -44,8 +47,8 @@ const Header = () => {
                             <div>
                                 <div className="header-controls-pics">
                                     <div data-id="search-expander" className="header-controls-pic header-controls-search" onClick={handleSearchOnSubmit}></div>
-                                    <div className="header-controls-pic header-controls-cart">
-                                        <div className="header-controls-cart-full">1</div>
+                                    <div className="header-controls-pic header-controls-cart" onClick={handleCartOnClick}>
+                                        {countCartItems > 0 ? <div className="header-controls-cart-full">{countCartItems}</div> : ""}
                                         <div className="header-controls-cart-menu"></div>
                                     </div>
                                 </div>

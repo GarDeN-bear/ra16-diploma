@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
@@ -15,9 +15,11 @@ import Fail from "./components/Fail.jsx";
 import Footer from "./components/Footer.jsx";
 
 function App() {
+    const [countCartItems, setCountCartItems] = useState((JSON.parse(localStorage.getItem('cart')) || []).length);
+
     return (
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <Header />
+            <Header countCartItems={countCartItems} />
             <main className="container">
                 <div className="row">
                     <div className="col">
@@ -29,7 +31,7 @@ function App() {
                             <Route path='/' exec element={<Main />} />
                             <Route path='/catalog.html' element={<Catalog />} />
                             <Route path='/catalog/:id.html' element={<CatalogItem />} />
-                            <Route path='/cart.html' element={<Cart />} />
+                            <Route path='/cart.html' element={<Cart setCountCartItems={setCountCartItems} />} />
                             <Route path='/about.html' element={<About />} />
                             <Route path='/contacts.html' element={<Contacts />} />
                             <Route path='*' element={<Fail />} />
