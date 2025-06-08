@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 const Catalog = ({ isMainFrame = false }) => {
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(0);
-    const [isLoadingCatalog, setIsLoadingCatalog] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [catalogItems, setCatalogItems] = useState([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
     const [offset, setOffset] = useState(0);
@@ -25,7 +25,7 @@ const Catalog = ({ isMainFrame = false }) => {
     useEffect(() => {
         fetch(`http://localhost:${import.meta.env.VITE_PORT_SERVER}/api/categories`)
             .then(response => {
-                if (!response.ok) throw new Error('Ошибка загрузки категорий');
+                if (!response.ok) navigate('*');
                 return response.json();
             })
             .then(data => {
@@ -34,7 +34,7 @@ const Catalog = ({ isMainFrame = false }) => {
             })
             .catch(err => {
                 navigate('*');
-                setIsLoadingCatalog(false);
+                setIsLoading(false);
             });
     }, []);
 
@@ -50,18 +50,18 @@ const Catalog = ({ isMainFrame = false }) => {
 
         fetch(url)
             .then(response => {
-                setIsLoadingCatalog(true);
-                if (!response.ok) throw new Error('Ошибка загрузки товаров');
+                setIsLoading(true);
+                if (!response.ok) navigate('*');
                 return response.json();
             })
             .then(data => {
                 setCatalogItems(prev => [...prev, ...data]);
                 setHasMoreItems(data.length >= 6);
-                setIsLoadingCatalog(false);
+                setIsLoading(false);
             })
             .catch(err => {
                 navigate('*');
-                setIsLoadingCatalog(false);
+                setIsLoading(false);
             });
     }, [selectedCategory, offset, search]);
 
@@ -80,7 +80,7 @@ const Catalog = ({ isMainFrame = false }) => {
     };
 
     const handleOnChangeSearchInput = (e) => {
-        setIsLoadingCatalog(true);
+        setIsLoading(true);
         setSearch(e.target.value);
         if (e.target.value) {
             setOffset(0);
@@ -89,69 +89,58 @@ const Catalog = ({ isMainFrame = false }) => {
     }
 
     return (
-        <main className="container">
-            <div className="row">
-                <div className="col">
-                    <div className="banner">
-                        <img src="../../img/banner.jpg" className="img-fluid" alt="К весне готовы!" />
-                        <h2 className="banner-header">К весне готовы!</h2>
-                    </div>
-                    <section className="catalog">
-                        <h2 className="text-center">Каталог</h2>
-                        {!isMainFrame && <form className="catalog-search-form form-inline">
-                            <input className="form-control" placeholder="Поиск" value={search} onChange={handleOnChangeSearchInput} />
-                        </form>}
-                        {isLoadingCatalog ? (
-                            <div className="preloader">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-                        ) :
-                            (<>
-                                <ul className="catalog-categories nav justify-content-center">
-                                    {categories.map(category => (
-                                        <li className="nav-item" key={category.id} >
-                                            <a
-                                                className={`nav-link ${selectedCategory === category.id ? 'active' : ''}`}
-                                                href="#"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    handleCategoryClick(category.id);
-                                                }}
-                                            >
-                                                {category.title}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <div className="row">
-                                    {catalogItems.map((item, index) => (
-                                        <div className="col-4" key={index}>
-                                            <div className="card">
-                                                <img src={item.images[0]}
-                                                    className="card-img-top img-fluid" alt={item.title} />
-                                                <div className="card-body">
-                                                    <p className="card-text">{item.title}</p>
-                                                    <p className="card-text">{item.price} руб.</p>
-                                                    <Link to={`/products/${item.id}.html`} className="btn btn-outline-primary">Заказать</Link>                                     </div>
-                                            </div>
-                                        </div>))
-                                    }
-                                </div>
-                                <div className="text-center">
-                                    {hasMoreItems &&
-                                        <button className="btn btn-outline-primary" onClick={loadMoreItems}>Загрузить ещё</button>
-                                    }
-                                </div>
-                            </>
-                            )}
-                    </section>
+        <section className="catalog">
+            <h2 className="text-center">Каталог</h2>
+            {!isMainFrame && <form className="catalog-search-form form-inline">
+                <input className="form-control" placeholder="Поиск" value={search} onChange={handleOnChangeSearchInput} />
+            </form>}
+            {isLoading ? (
+                <div className="preloader">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-            </div >
-
-        </main >
+            ) :
+                (<>
+                    <ul className="catalog-categories nav justify-content-center">
+                        {categories.map(category => (
+                            <li className="nav-item" key={category.id} >
+                                <a
+                                    className={`nav-link ${selectedCategory === category.id ? 'active' : ''}`}
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleCategoryClick(category.id);
+                                    }}
+                                >
+                                    {category.title}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="row">
+                        {catalogItems.map((item, index) => (
+                            <div className="col-4" key={index}>
+                                <div className="card">
+                                    <img src={item.images[0]}
+                                        className="card-img-top img-fluid" alt={item.title} />
+                                    <div className="card-body">
+                                        <p className="card-text">{item.title}</p>
+                                        <p className="card-text">{item.price} руб.</p>
+                                        <Link to={`/catalog/${item.id}.html`} className="btn btn-outline-primary">Заказать</Link>                                     </div>
+                                </div>
+                            </div>))
+                        }
+                    </div>
+                    <div className="text-center">
+                        {hasMoreItems &&
+                            <button className="btn btn-outline-primary" onClick={loadMoreItems}>Загрузить ещё</button>
+                        }
+                    </div>
+                </>
+                )}
+        </section>
     );
 }
 
